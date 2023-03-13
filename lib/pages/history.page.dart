@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:weather/weather.dart';
 import 'package:weather_app/repositories/weather.repo.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -40,7 +39,7 @@ class _HistoryPageState extends State<HistoryPage> {
                     const SizedBox(
                       width: 10,
                     ),
-                    Text('Temp: ${tempList[index]}'),
+                    Text('Temp: ${tempList[index]}°C'),
                     Image.network(
                       iconList[index],
                       scale: 1.5,
@@ -51,6 +50,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         textAlign: TextAlign.right,
                       ),
                     ),
+                    const SizedBox(width: 10)
                   ],
                 );
               },

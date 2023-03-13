@@ -1,9 +1,4 @@
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:weather/weather.dart';
 import 'package:weather_app/pages/history.page.dart';
 import 'package:weather_app/repositories/weather.repo.dart';
 
