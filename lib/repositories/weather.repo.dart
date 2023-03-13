@@ -1,3 +1,4 @@
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather/weather.dart';
 
 class WeatherRepo {
@@ -11,7 +12,10 @@ class WeatherRepo {
     _weatherFactory = WeatherFactory(_apiKey, language: Language.GERMAN);
   }
 
-  final List<Weather> _weatherList = [];
+  List<String> _nameStringList = [];
+  List<String> _iconStringList = [];
+  List<String> _dateStringList = [];
+  List<String> _tempStringList = [];
   WeatherFactory? _weatherFactory;
   Weather? _lastWeather;
   final String _apiKey = '1a5861cccad85b14095593639f7355cc';
@@ -19,38 +23,71 @@ class WeatherRepo {
   Future<void> getWeatherFromApi(String cityName) async {
     try {
       _lastWeather = await _weatherFactory!.currentWeatherByCityName(cityName);
-      _weatherList.add(_lastWeather!);
-      _weatherList.length > 30 ? _weatherList.removeAt(0) : null;
+      convertWeatherToStrings();
+      _nameStringList.length > 30 ? removeLastEntry : null;
+      saveData();
     } catch (e) {
       throw Exception('City not found!');
     }
   }
 
-  List<Weather> getWeatherList() {
-    return _weatherList;
+  void setWeatherLists(
+      {required List<String> nameStringList,
+      required List<String> iconStringList,
+      required List<String> dateStringList,
+      required List<String> tempStringList}) {
+    _nameStringList = nameStringList;
+    _iconStringList = iconStringList;
+    _dateStringList = dateStringList;
+    _tempStringList = tempStringList;
   }
 
-  List<Weather> getReversedWeatherList() {
-    return _weatherList.reversed.toList();
+  List<String> getNameList() {
+    return _nameStringList;
   }
 
-  Weather getLatestWeather() {
-    return _weatherList.last;
+  List<String> getIconList() {
+    return _iconStringList;
   }
 
-  int getTemperatureCelsius() {
-    return _lastWeather!.temperature!.celsius!.round();
+  List<String> getDateList() {
+    return _dateStringList;
   }
 
-  String getWeatherIconString() {
-    String weatherString =
-        'https://openweathermap.org/img/wn/${_lastWeather?.weatherIcon}@2x.png';
-    return weatherString;
+  List<String> getTempList() {
+    return _tempStringList;
   }
 
-  String getWeatherIconStringByIndex(int index) {
-    String weatherString =
-        'https://openweathermap.org/img/wn/${_weatherList[index].weatherIcon}@2x.png';
-    return weatherString;
+  void convertWeatherToStrings() {
+    _nameStringList.insert(0, _lastWeather!.areaName!);
+    _tempStringList.insert(
+        0, _lastWeather!.temperature!.celsius!.round().toString());
+    _iconStringList.insert(0,
+        'https://openweathermap.org/img/wn/${_lastWeather!.weatherIcon}@2x.png');
+    _dateStringList.insert(0,
+        '${_lastWeather!.date!.day}.${_lastWeather!.date!.month}.${_lastWeather!.date!.year}  ${_lastWeather!.date!.hour}:${_lastWeather!.date!.second}');
+  }
+
+  void removeLastEntry() {
+    _nameStringList.removeLast();
+    _iconStringList.removeLast();
+    _dateStringList.removeLast();
+    _tempStringList.removeLast();
+  }
+
+  Future<void> saveData() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setStringList('nameList', _nameStringList);
+    prefs.setStringList('tempList', _tempStringList);
+    prefs.setStringList('iconList', _iconStringList);
+    prefs.setStringList('dateList', _dateStringList);
+  }
+
+  Future<void> restoreData() async {
+    final prefs = await SharedPreferences.getInstance();
+    _nameStringList = prefs.getStringList('nameList') ?? [];
+    _tempStringList = prefs.getStringList('tempList') ?? [];
+    _iconStringList = prefs.getStringList('iconList') ?? [];
+    _dateStringList = prefs.getStringList('dateList') ?? [];
   }
 }

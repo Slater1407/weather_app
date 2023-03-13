@@ -1,4 +1,9 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:weather/weather.dart';
 import 'package:weather_app/pages/history.page.dart';
 import 'package:weather_app/repositories/weather.repo.dart';
 
@@ -13,6 +18,13 @@ class _WeatherPageState extends State<WeatherPage> {
   final TextEditingController _cityController = TextEditingController();
   String _tempString = '';
   bool _iconAwailable = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WeatherRepo().restoreData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,7 +81,7 @@ class _WeatherPageState extends State<WeatherPage> {
             Center(
               child: _iconAwailable == false
                   ? const Text('')
-                  : Image.network(WeatherRepo().getWeatherIconString()),
+                  : Image.network(WeatherRepo().getIconList()[0]),
             ),
           ],
         ),
@@ -82,7 +94,7 @@ class _WeatherPageState extends State<WeatherPage> {
       if (_cityController.text.isNotEmpty) {
         await WeatherRepo().getWeatherFromApi(_cityController.text);
         _tempString =
-            'Temp in ${_cityController.text}: ${WeatherRepo().getTemperatureCelsius()}°C';
+            'Temp in ${_cityController.text}: ${WeatherRepo().getTempList()[0]}°C';
         //_weatherController.text = WeatherRepo().getWeather();
         _iconAwailable = true;
       } else {
@@ -98,6 +110,7 @@ class _WeatherPageState extends State<WeatherPage> {
       }
     } catch (e) {
       _tempString = 'Stadt nicht gefunden!';
+      debugPrint(e.toString());
     }
   }
 }

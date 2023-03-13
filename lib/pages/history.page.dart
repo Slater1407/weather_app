@@ -12,7 +12,10 @@ class HistoryPage extends StatefulWidget {
 class _HistoryPageState extends State<HistoryPage> {
   @override
   Widget build(BuildContext context) {
-    List<Weather> weatherList = WeatherRepo().getReversedWeatherList();
+    var nameList = WeatherRepo().getNameList();
+    var iconList = WeatherRepo().getIconList();
+    var dateList = WeatherRepo().getDateList();
+    var tempList = WeatherRepo().getTempList();
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -33,26 +36,25 @@ class _HistoryPageState extends State<HistoryPage> {
                     const SizedBox(
                       width: 10,
                     ),
-                    Text(weatherList[index].areaName!),
+                    Text(nameList[index]),
                     const SizedBox(
-                      width: 15,
+                      width: 10,
                     ),
-                    Text(
-                        'Temp: ${weatherList[index].temperature!.celsius!.round()}'),
-                    const SizedBox(
-                      width: 15,
-                    ),
+                    Text('Temp: ${tempList[index]}'),
                     Image.network(
-                      WeatherRepo().getWeatherIconStringByIndex(index),
+                      iconList[index],
                       scale: 1.5,
                     ),
-                    Expanded(child: Container()),
-                    Text(
-                        '${weatherList[index].date!.day}.${weatherList[index].date!.month}.${weatherList[index].date!.year}  ${weatherList[index].date!.hour}:${weatherList[index].date!.second}'),
+                    Expanded(
+                      child: Text(
+                        dateList[index],
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
                   ],
                 );
               },
-              childCount: weatherList.length,
+              childCount: nameList.length,
             ),
           ),
         ],
